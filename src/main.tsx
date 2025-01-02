@@ -1,28 +1,29 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import "./index.css";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from "./pages/Loading";
 import Confirmation from "./pages/Confirmation";
 import Booking from "./pages/Booking";
+import Layout from "./components/Layout";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Loading />,
-  },
-  {
-    path: "/booking",
-    element: <Booking />,
-  },
-  {
-    path: "/confirmation",
-    element: <Confirmation />,
-  },
-]);
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element not found!");
+}
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+const root = ReactDOM.createRoot(rootElement);
+
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Loading />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/confirmation" element={<Confirmation />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  </React.StrictMode>
 );
