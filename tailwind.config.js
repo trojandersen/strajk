@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         customRed: "#EC315A",
+        customPurple: "#441D81",
       },
       fontFamily: {
         WorkSans: ["Work Sans", "sans-serif"],

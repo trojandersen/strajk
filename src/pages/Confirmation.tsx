@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import logo from "../assets/logo.svg";
 
-export default function Confirmation() {
+const Confirmation: React.FC = () => {
   return (
     <motion.main className="flex flex-col items-center">
       <section className="flex flex-col items-center">
@@ -16,4 +16,6 @@ export default function Confirmation() {
       </button>
     </motion.main>
   );
-}
+};
+
+export default Confirmation;
