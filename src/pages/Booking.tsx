@@ -134,7 +134,7 @@ const Booking: React.FC = () => {
         </fieldset>
         <button
           type="submit"
-          className="py-3 px-12 mb-1 font-WorkSans bg-customRed text-white font-bold rounded-lg tracking-widest hover:bg-red-500"
+          className="py-3 px-12 font-WorkSans bg-customRed text-white font-bold rounded-lg tracking-widest hover:bg-red-500"
         >
           STRIIIIIIKE!
         </button>
