@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import logo from "../assets/logo.svg";
 
 const Booking: React.FC = () => {
-  const [shoeSizes, setShoeSizes] = useState<string[]>(["Euro 44"]);
+  const [booking, setBooking] = useState({
+    when: "",
+    lanes: 1,
+    people: 2,
+    shoes: [38, 39, 44, 43],
+  });
   const lastShoeSizeRef = useRef<HTMLDivElement | null>(null);
-
-  const addShoeSize = () => setShoeSizes([...shoeSizes, "Euro 44"]);
-  const removeShoeSize = (index: number) => {
-    setShoeSizes(shoeSizes.filter((_, i) => i !== index));
-  };
 
   useEffect(() => {
     if (lastShoeSizeRef.current) {
@@ -17,11 +17,33 @@ const Booking: React.FC = () => {
         block: "end",
       });
     }
-  }, [shoeSizes]);
+  }, [booking.shoes]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted!");
+    try {
+      const response = await fetch(
+        "https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com",
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "738c6b9d-24cf-47c3-b688-f4f4c5747662",
+          },
+          body: JSON.stringify(booking),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response failure");
+      }
+
+      const data = await response.json();
+      console.log("Booking successful:", data);
+    } catch (error) {
+      console.error("There was a problem with the booking request:", error);
+    }
   };
 
   return (
@@ -37,7 +59,7 @@ const Booking: React.FC = () => {
           <legend className="text-lg font-semibold text-customPurple">
             WHEN, WHAT & WHO
           </legend>
-          <section className="grid grid-cols-2 gap-4">
+          <section className="flex justify-between gap-5">
             <div>
               <label
                 htmlFor="date"
@@ -47,9 +69,17 @@ const Booking: React.FC = () => {
               </label>
               <input
                 id="date"
-                type="text"
-                defaultValue="3 dec"
-                className="mt-1 px-3 py-2 border rounded-lg focus:ring-pink-500 focus:border-pink-500"
+                type="date"
+                value={booking.when.split("T")[0]}
+                onChange={(e) =>
+                  setBooking({
+                    ...booking,
+                    when:
+                      e.target.value + "T" + booking.when.split("T")[1] ||
+                      "00:00",
+                  })
+                }
+                className="mt-1 px-5 py-2 border rounded-lg focus:ring-pink-500 focus:border-pink-500"
               />
             </div>
 
@@ -62,9 +92,15 @@ const Booking: React.FC = () => {
               </label>
               <input
                 id="time"
-                type="text"
-                defaultValue="21.00"
-                className="mt-1 px-3 py-2 border rounded-lg focus:ring-pink-500 focus:border-pink-500"
+                type="time"
+                value={booking.when.split("T")[1]}
+                onChange={(e) =>
+                  setBooking({
+                    ...booking,
+                    when: booking.when.split("T")[0] + "T" + e.target.value,
+                  })
+                }
+                className="mt-1 px-5 py-2 border rounded-lg focus:ring-pink-500 focus:border-pink-500"
               />
             </div>
           </section>
@@ -78,7 +114,10 @@ const Booking: React.FC = () => {
           <input
             id="bowlers"
             type="text"
-            defaultValue="3 pers"
+            value={booking.people}
+            onChange={(e) =>
+              setBooking({ ...booking, people: parseInt(e.target.value) })
+            }
             className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-pink-500 focus:border-pink-500"
           />
 
@@ -90,8 +129,11 @@ const Booking: React.FC = () => {
           </label>
           <input
             id="lanes"
-            type="text"
-            defaultValue="1 lane"
+            type="number"
+            value={booking.lanes}
+            onChange={(e) =>
+              setBooking({ ...booking, lanes: parseInt(e.target.value) })
+            }
             className="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-pink-500 focus:border-pink-500"
           />
         </fieldset>
@@ -100,7 +142,7 @@ const Booking: React.FC = () => {
           <legend className="text-lg font-semibold text-customPurple">
             SHOES
           </legend>
-          {shoeSizes.map((size, index) => (
+          {booking.shoes.map((size, index) => (
             <section key={index}>
               <div>
                 <label
@@ -112,21 +154,27 @@ const Booking: React.FC = () => {
                 <div className="flex gap-5">
                   <input
                     id={`size-${index}`}
-                    type="text"
+                    type="number"
                     value={size}
                     onChange={(e) =>
-                      setShoeSizes(
-                        shoeSizes.map((s, i) =>
-                          i === index ? e.target.value : s
-                        )
-                      )
+                      setBooking({
+                        ...booking,
+                        shoes: booking.shoes.map((s, i) =>
+                          i === index ? parseInt(e.target.value) : s
+                        ),
+                      })
                     }
                     className="px-3 py-2 border rounded-lg w-full"
                   />
                   <button
                     type="button"
-                    onClick={() => removeShoeSize(index)}
-                    className="px-4 py-1 bg-customRed text-white text-2xl rounded-full hover:bg-red-500"
+                    onClick={() =>
+                      setBooking({
+                        ...booking,
+                        shoes: booking.shoes.filter((_, i) => i !== index),
+                      })
+                    }
+                    className="px-10 py-1 bg-customRed text-white text-2xl rounded-full hover:bg-red-500"
                   >
                     -
                   </button>
@@ -137,7 +185,9 @@ const Booking: React.FC = () => {
           <div className="flex justify-center">
             <button
               type="button"
-              onClick={addShoeSize}
+              onClick={() =>
+                setBooking({ ...booking, shoes: [...booking.shoes, 38] })
+              }
               className="px-3 py-1 bg-customRed text-white text-2xl rounded-full hover:bg-red-500"
             >
               +

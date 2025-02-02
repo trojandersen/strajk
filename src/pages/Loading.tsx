@@ -14,7 +14,7 @@ const Loading: React.FC = () => {
         onClick={() => navigate("/booking")}
         className="cursor-pointer"
       />
-      <h1 className="font-BebasNeune text-customRed  text-[80px] tracking-wide">
+      <h1 className="font-BebasNeune text-customRed  text-[80px] tracking-widest">
         STRAJK
       </h1>
       <h2 className="font-WorkSans tracking-[0.5em]">BOWLING</h2>
