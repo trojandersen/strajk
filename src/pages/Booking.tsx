@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 
 const Booking: React.FC = () => {
   const [booking, setBooking] = useState({
-    when: "",
+    when: "2025-05-05T00:00",
     lanes: 1,
     people: 2,
     shoes: [38, 39, 44, 43],
   });
   const lastShoeSizeRef = useRef<HTMLDivElement | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (lastShoeSizeRef.current) {
       lastShoeSizeRef.current.scrollIntoView({
@@ -26,7 +27,6 @@ const Booking: React.FC = () => {
         "https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com",
         {
           method: "POST",
-          mode: "no-cors",
           headers: {
             "Content-Type": "application/json",
             "x-api-key": "738c6b9d-24cf-47c3-b688-f4f4c5747662",
@@ -41,6 +41,17 @@ const Booking: React.FC = () => {
 
       const data = await response.json();
       console.log("Booking successful:", data);
+      navigate("/confirmation", {
+        state: {
+          when: data.when,
+          lanes: data.lanes,
+          people: data.people,
+          shoes: data.shoes,
+          price: data.price,
+          id: data.id,
+          active: data.active,
+        },
+      });
     } catch (error) {
       console.error("There was a problem with the booking request:", error);
     }
